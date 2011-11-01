@@ -33,7 +33,7 @@ def alphabet(datafile_lines):
 
     return sorted(alph)
 
-def empirical_entropy_rate(datafile_lines, k, alpha, debug=False):
+def empirical_entropy_rate(datafile_lines, k, alpha, result_filename, debug=False):
     """
     Given a datafile lines and a order k, returns the
     empirical entropy rate for a Markov chain of order k
@@ -67,9 +67,10 @@ def empirical_entropy_rate(datafile_lines, k, alpha, debug=False):
         output.update(res) # add partial result to main matrix
 
     # Results storage
-    proba_file = open('../results/distribs/distrib_k%d.txt'%(k), 'w')
+    proba_file = open(result_filename, 'w')
     pickle.dump(output, proba_file)
     proba_file.close()
+    print 'Output file %s has been successfully created.'%(result_filename)
         
     return 0
     
@@ -91,17 +92,17 @@ def multiprocess_proba_wrapper(ak_chunks):
     
         # -- calculate *cumulative* p(b|a^k)  for each symbol of the alphabet
         pbak_cumul = 0
-        for char in alph:
-            pbak = conditional_empirical_proba(f_lines, k, ak, char, nak)
+        for symbol in alph:
+            pbak = conditional_empirical_proba(f_lines, ak, symbol, nak)
             pbak_cumul += pbak
 
-            # if sucession ak+char is encountered in text, add probability to matrix
-            if pbak != 0.0: # Very important, if pbak = 0.0, the combination ak+char will not be randomly generated 
-                prob[ak][char] = pbak_cumul
+            # if sucession ak+symbol is encountered in text, add probability to matrix
+            if pbak != 0.0: # Very important, if pbak = 0.0, the combination ak+symbol will not be randomly generated 
+                prob[ak][symbol] = pbak_cumul
 
     return prob
 
-def conditional_empirical_proba(chain, k, ak, symbol, n_ak): # p(b|a^k)
+def conditional_empirical_proba(chain, ak, symbol, n_ak): # p(b|a^k)
     """
     Returns the proportion of symbols after the ak string (contained
     in chain string and of length k) which are equal to the value 
@@ -109,7 +110,7 @@ def conditional_empirical_proba(chain, k, ak, symbol, n_ak): # p(b|a^k)
     Ex : conditional_empirical_proba('ABCABD', 2, 'AB', 'C', n_ak) --> 0.5 
     """
 
-    nb_ak = n_b_ak(chain, k, ak, symbol)
+    nb_ak = n_b_ak(chain, ak, symbol)
     if n_ak != 0:
         return float(nb_ak)/n_ak
     else:
@@ -125,7 +126,7 @@ def n_ak(chain, ak): # n_(a^k)
 
     return chain.count(ak)
 
-def n_b_ak(chain, k, ak, symbol): # n_(b|a^k)
+def n_b_ak(chain, ak, symbol): # n_(b|a^k)
     """
     Given a string chain, returns the number of 
     times that a given symbol is found 
@@ -158,9 +159,10 @@ if __name__=='__main__':
             k_list = [10]
             for k in k_list: 
                 print 'Generating probability matrix for text %s '%(filepath) 
+                result_filename = '../results/distribs/distrib_k%d.txt'%(k)
                 # Put debug = True to enable print operations
                 # Use only with small data, otherwise, useless >_<
-                empirical_entropy_rate(f_lines, k, alph, debug=False)
+                empirical_entropy_rate(f_lines, k, alph, result_filename, debug=False)
         
         else:
             print 'The given file path %s leads to no valid file.' %(filepath)

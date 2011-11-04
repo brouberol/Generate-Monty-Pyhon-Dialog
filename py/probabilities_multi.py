@@ -8,7 +8,7 @@ This matrix can then be used in the script random_text.py to
 generate a text respecting the same probabilities, and hence
 the same "style"
 
-Multiprocessing techniques are used to increase execution time
+Multiprocessing techniques are used to decrease execution time
 
 Author: Balthazar Rouberol @BaltoRouberol
 License : DWTFYWWI (Do What The Fuck You Want With It) 

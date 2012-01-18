@@ -14,11 +14,11 @@
 <h2>How to use them? </h2>
 
 <pre>
-$ python probabilities.py ../data.data.txt
+$ python probabilities.py ../data/data.txt
 </pre>
 
 <pre>
-$ python probabilities_multi.py ../data.data.txt
+$ python probabilities_multi.py ../data/data.txt
 </pre>
 
 <pre>
